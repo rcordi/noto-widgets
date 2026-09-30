@@ -12,6 +12,8 @@ struct SelectWidgetTypeView: View {
     
     @State private var selectedType: WidgetType = .checklist
     @State private var selectedSize: WidgetPreviewSize = .medium
+    @State private var showingDatabasePicker = false
+    @State private var selectedDatabase: NotionSearchResult?
     
     var body: some View {
         ZStack {
@@ -48,6 +50,16 @@ struct SelectWidgetTypeView: View {
             }
         }
         .preferredColorScheme(.dark)
+        .sheet(isPresented: $showingDatabasePicker) {
+            NotionDatabasePickerView { database in
+                selectedDatabase = database
+
+                print(
+                    "Selected database:",
+                    database.displayTitle
+                )
+            }
+        }
     }
     
     private var header: some View {
@@ -151,7 +163,7 @@ struct SelectWidgetTypeView: View {
     
     private var createButton: some View {
         Button {
-            print("Create \(selectedType.title)")
+            handleCreate()
         } label: {
             Text("Create \(selectedType.title)")
                 .font(.system(size: 17, weight: .semibold))
@@ -168,6 +180,16 @@ struct SelectWidgetTypeView: View {
         )
         .padding(.horizontal, 22)
         .padding(.bottom, 12)
+    }
+    
+    private func handleCreate() {
+        switch selectedType {
+        case .checklist:
+            showingDatabasePicker = true
+
+        default:
+            print("Create \(selectedType.title)")
+        }
     }
     
 }
