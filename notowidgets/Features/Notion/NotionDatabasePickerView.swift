@@ -63,7 +63,6 @@ struct NotionDatabasePickerView: View {
                             ForEach(databases) { database in
                                 Button {
                                     onSelect(database)
-                                    dismiss()
                                 } label: {
                                     HStack(spacing: 12) {
                                         Image(systemName: "tablecells")

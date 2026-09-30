@@ -174,4 +174,84 @@ final class NotionAPIClient {
             )
         }
     }
+    
+    func queryDatabase(
+        databaseID: String,
+        token: String
+    ) async throws -> NotionDatabaseQueryResponse {
+
+        guard let url = URL(
+            string: baseURL + "/databases/\(databaseID)/query"
+        ) else {
+            throw NotionAPIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+
+        request.httpMethod = "POST"
+
+        request.setValue(
+            "Bearer \(token)",
+            forHTTPHeaderField: "Authorization"
+        )
+
+        request.setValue(
+            "application/json",
+            forHTTPHeaderField: "Content-Type"
+        )
+
+        request.setValue(
+            "2022-06-28",
+            forHTTPHeaderField: "Notion-Version"
+        )
+
+        request.httpBody = try JSONSerialization.data(
+            withJSONObject: [
+                "page_size": 100
+            ]
+        )
+
+        let (data, response) =
+            try await URLSession.shared.data(
+                for: request
+            )
+
+        guard let httpResponse =
+            response as? HTTPURLResponse
+        else {
+            throw NotionAPIError.invalidResponse
+        }
+
+        switch httpResponse.statusCode {
+
+        case 200...299:
+            do {
+                return try JSONDecoder().decode(
+                    NotionDatabaseQueryResponse.self,
+                    from: data
+                )
+            } catch {
+                print("❌ DATABASE DECODING ERROR:")
+                print(error)
+
+                print("❌ DATABASE RAW RESPONSE:")
+                print(
+                    String(
+                        data: data,
+                        encoding: .utf8
+                    ) ?? ""
+                )
+
+                throw NotionAPIError.decodingFailed
+            }
+
+        case 401:
+            throw NotionAPIError.unauthorized
+
+        default:
+            throw NotionAPIError.requestFailed(
+                statusCode: httpResponse.statusCode
+            )
+        }
+    }
 }

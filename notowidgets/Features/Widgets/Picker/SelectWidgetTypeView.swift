@@ -50,14 +50,18 @@ struct SelectWidgetTypeView: View {
             }
         }
         .preferredColorScheme(.dark)
+        
         .sheet(isPresented: $showingDatabasePicker) {
-            NotionDatabasePickerView { database in
-                selectedDatabase = database
-
-                print(
-                    "Selected database:",
-                    database.displayTitle
-                )
+            Group {
+                if let selectedDatabase {
+                    ChecklistConfigurationView(
+                        database: selectedDatabase
+                    )
+                } else {
+                    NotionDatabasePickerView { database in
+                        selectedDatabase = database
+                    }
+                }
             }
         }
     }
@@ -185,11 +189,11 @@ struct SelectWidgetTypeView: View {
     private func handleCreate() {
         switch selectedType {
         case .checklist:
+            selectedDatabase = nil
             showingDatabasePicker = true
 
         default:
             print("Create \(selectedType.title)")
         }
     }
-    
 }

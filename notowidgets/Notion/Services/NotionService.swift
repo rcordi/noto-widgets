@@ -28,4 +28,21 @@ final class NotionService {
             $0.object == "database"
         }
     }
+    
+    func fetchPages(
+        from databaseID: String
+    ) async throws -> [NotionPage] {
+
+        let token =
+            try NotionTokenStore.shared.getToken()
+
+        let response =
+            try await NotionAPIClient.shared
+                .queryDatabase(
+                    databaseID: databaseID,
+                    token: token
+                )
+
+        return response.results
+    }
 }
