@@ -20,9 +20,12 @@ enum WidgetPreviewSize: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
-        case .small: "square"
-        case .medium: "rectangle"
-        case .large: "square.fill"
+        case .small:
+            return "square.grid.2x2"
+        case .medium:
+            return "rectangle.split.1.2"
+        case .large:
+            return "square.grid.3x3"
         }
     }
 }

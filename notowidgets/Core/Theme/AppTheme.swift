@@ -1,5 +1,5 @@
 //
-//  Theme.swift
+//  AppTheme.swift
 //  notowidgets
 //
 //  Created by Rachel Cordi on 2026-09-29.
@@ -23,10 +23,15 @@ enum AppTheme {
     )
     
     static let primaryText = Color.white
-    static let secondaryText = Color.secondary
+    
+    static let secondaryText = Color(
+        red: 0.56,
+        green: 0.56,
+        blue: 0.60
+    )
     static let accent = Color.blue
     
-    static let cardRadius: CGFloat = 26
+    static let cardRadius: CGFloat = 28
     static let buttonRadius: CGFloat = 18
     static let horizontalPadding: CGFloat = 22
 }
