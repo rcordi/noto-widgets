@@ -17,6 +17,7 @@ struct ChecklistConfigurationView: View {
     @State private var errorMessage: String?
     @State private var hasLoaded = false
     @State private var updatingPageIDs: Set<String> = []
+    @State private var localCompletion: [String: Bool] = [:]
 
     var body: some View {
         ZStack {
@@ -123,11 +124,11 @@ struct ChecklistConfigurationView: View {
                             Text(page.displayTitle)
                                 .font(.subheadline)
                                 .foregroundStyle(
-                                    page.isComplete
+                                    completionState(for: page)
                                     ? AppTheme.secondaryText
                                     : AppTheme.primaryText
                                 )
-                                .strikethrough(page.isComplete)
+                                .strikethrough(completionState(for: page))
                                 .lineLimit(1)
 
                             Spacer()
@@ -135,25 +136,23 @@ struct ChecklistConfigurationView: View {
                             Button {
                                 toggleCompletion(for: page)
                             } label: {
-                                if updatingPageIDs.contains(page.id) {
-                                    ProgressView()
-                                        .tint(AppTheme.accent)
-                                        .frame(width: 22, height: 22)
-
-                                } else {
-                                    Image(
-                                        systemName:
-                                            page.isComplete
-                                            ? "checkmark.square.fill"
-                                            : "square"
-                                    )
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(
-                                        page.isComplete
-                                        ? AppTheme.accent
-                                        : AppTheme.secondaryText
-                                    )
-                                }
+                                Image(
+                                    systemName:
+                                        completionState(for: page)
+                                        ? "checkmark.square.fill"
+                                        : "square"
+                                )
+                                .font(.system(size: 20))
+                                .foregroundStyle(
+                                    completionState(for: page)
+                                    ? AppTheme.accent
+                                    : AppTheme.secondaryText
+                                )
+                                .opacity(
+                                    updatingPageIDs.contains(page.id)
+                                    ? 0.6
+                                    : 1
+                                )
                             }
                             .buttonStyle(PressableButtonStyle())
                             .disabled(updatingPageIDs.contains(page.id))
@@ -217,6 +216,11 @@ struct ChecklistConfigurationView: View {
             return
         }
 
+        let oldValue = completionState(for: page)
+        let newValue = !oldValue
+
+        // Update UI immediately
+        localCompletion[page.id] = newValue
         updatingPageIDs.insert(page.id)
 
         Task {
@@ -224,39 +228,28 @@ struct ChecklistConfigurationView: View {
                 try await NotionService.shared
                     .setTaskComplete(
                         pageID: page.id,
-                        isComplete: !page.isComplete
+                        isComplete: newValue
                     )
 
-                await reloadPages()
+                await MainActor.run {
+                    updatingPageIDs.remove(page.id)
+                    errorMessage = nil
+                }
 
             } catch {
                 await MainActor.run {
-                    errorMessage =
-                        error.localizedDescription
+                    // Roll back UI if Notion update fails
+                    localCompletion[page.id] = oldValue
+                    updatingPageIDs.remove(page.id)
 
-                    updatingPageIDs.remove(
-                        page.id
-                    )
+                    errorMessage = error.localizedDescription
                 }
             }
         }
     }
     
-    @MainActor
-    private func reloadPages() async {
-        do {
-            pages = try await NotionService.shared
-                .fetchPages(
-                    from: database.id
-                )
-
-            updatingPageIDs.removeAll()
-
-        } catch {
-            errorMessage =
-                error.localizedDescription
-
-            updatingPageIDs.removeAll()
-        }
+    private func completionState(for page: NotionPage) -> Bool {
+        localCompletion[page.id] ?? page.isComplete
     }
+    
 }
