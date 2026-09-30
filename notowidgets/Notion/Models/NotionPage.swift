@@ -29,6 +29,9 @@ struct NotionPage: Decodable, Identifiable {
 
         return "Untitled"
     }
+    var isComplete: Bool {
+        properties["Complete"]?.checkbox ?? false
+    }
 }
 
 struct NotionPageProperty: Decodable {

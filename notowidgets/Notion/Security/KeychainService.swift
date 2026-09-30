@@ -93,6 +93,23 @@ final class KeychainService {
             throw KeychainError.unhandledError(status)
         }
     }
+    
+    func setTaskComplete(
+        pageID: String,
+        isComplete: Bool
+    ) async throws {
+
+        let token =
+            try NotionTokenStore.shared.getToken()
+
+        try await NotionAPIClient.shared
+            .updateCheckbox(
+                pageID: pageID,
+                propertyName: "Complete",
+                value: isComplete,
+                token: token
+            )
+    }
 }
 
 enum KeychainError: Error {

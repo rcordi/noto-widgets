@@ -16,6 +16,7 @@ struct ChecklistConfigurationView: View {
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var hasLoaded = false
+    @State private var updatingPageIDs: Set<String> = []
 
     var body: some View {
         ZStack {
@@ -116,21 +117,46 @@ struct ChecklistConfigurationView: View {
                 VStack(spacing: 10) {
                     ForEach(pages) { page in
                         HStack(spacing: 10) {
-                            Image(
-                                systemName: "doc.text"
-                            )
-                            .foregroundStyle(.secondary)
+                            Image(systemName: "doc.text")
+                                .foregroundStyle(.secondary)
 
                             Text(page.displayTitle)
                                 .font(.subheadline)
+                                .foregroundStyle(
+                                    page.isComplete
+                                    ? AppTheme.secondaryText
+                                    : AppTheme.primaryText
+                                )
+                                .strikethrough(page.isComplete)
                                 .lineLimit(1)
 
                             Spacer()
 
-                            Image(
-                                systemName: "square"
-                            )
-                            .foregroundStyle(.secondary)
+                            Button {
+                                toggleCompletion(for: page)
+                            } label: {
+                                if updatingPageIDs.contains(page.id) {
+                                    ProgressView()
+                                        .tint(AppTheme.accent)
+                                        .frame(width: 22, height: 22)
+
+                                } else {
+                                    Image(
+                                        systemName:
+                                            page.isComplete
+                                            ? "checkmark.square.fill"
+                                            : "square"
+                                    )
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(
+                                        page.isComplete
+                                        ? AppTheme.accent
+                                        : AppTheme.secondaryText
+                                    )
+                                }
+                            }
+                            .buttonStyle(PressableButtonStyle())
+                            .disabled(updatingPageIDs.contains(page.id))
                         }
                         .padding(.horizontal, 14)
                         .frame(height: 50)
@@ -156,21 +182,81 @@ struct ChecklistConfigurationView: View {
                 .fetchPages(
                     from: database.id
                 )
+            if let firstPage = pages.first {
+                print("✅ FIRST TASK:", firstPage.displayTitle)
+
+                for (name, property) in firstPage.properties {
+                    print(
+                        "PROPERTY:",
+                        name,
+                        "| TYPE:",
+                        property.type ?? "unknown",
+                        "| CHECKBOX:",
+                        property.checkbox as Any,
+                        "| STATUS:",
+                        property.status?.name as Any,
+                        "| SELECT:",
+                        property.select?.name as Any
+                    )
+                }
+            }
 
             errorMessage = nil
             isLoading = false
 
-        } catch is CancellationError {
-            // Ignore expected task cancellation.
-
-        } catch let error as URLError
-            where error.code == .cancelled {
-
-            // Ignore URLSession cancellation.
-
         } catch {
             errorMessage = error.localizedDescription
             isLoading = false
+        }
+    }
+    
+    private func toggleCompletion(
+        for page: NotionPage
+    ) {
+        guard !updatingPageIDs.contains(page.id) else {
+            return
+        }
+
+        updatingPageIDs.insert(page.id)
+
+        Task {
+            do {
+                try await NotionService.shared
+                    .setTaskComplete(
+                        pageID: page.id,
+                        isComplete: !page.isComplete
+                    )
+
+                await reloadPages()
+
+            } catch {
+                await MainActor.run {
+                    errorMessage =
+                        error.localizedDescription
+
+                    updatingPageIDs.remove(
+                        page.id
+                    )
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    private func reloadPages() async {
+        do {
+            pages = try await NotionService.shared
+                .fetchPages(
+                    from: database.id
+                )
+
+            updatingPageIDs.removeAll()
+
+        } catch {
+            errorMessage =
+                error.localizedDescription
+
+            updatingPageIDs.removeAll()
         }
     }
 }

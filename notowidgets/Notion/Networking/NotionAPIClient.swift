@@ -254,4 +254,71 @@ final class NotionAPIClient {
             )
         }
     }
+    
+    func updateCheckbox(
+        pageID: String,
+        propertyName: String,
+        value: Bool,
+        token: String
+    ) async throws {
+
+        guard let url = URL(
+            string: baseURL + "/pages/\(pageID)"
+        ) else {
+            throw NotionAPIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+
+        request.httpMethod = "PATCH"
+
+        request.setValue(
+            "Bearer \(token)",
+            forHTTPHeaderField: "Authorization"
+        )
+
+        request.setValue(
+            "application/json",
+            forHTTPHeaderField: "Content-Type"
+        )
+
+        request.setValue(
+            "2022-06-28",
+            forHTTPHeaderField: "Notion-Version"
+        )
+
+        request.httpBody = try JSONSerialization.data(
+            withJSONObject: [
+                "properties": [
+                    propertyName: [
+                        "checkbox": value
+                    ]
+                ]
+            ]
+        )
+
+        let (_, response) =
+            try await URLSession.shared.data(
+                for: request
+            )
+
+        guard let httpResponse =
+            response as? HTTPURLResponse
+        else {
+            throw NotionAPIError.invalidResponse
+        }
+
+        switch httpResponse.statusCode {
+        case 200...299:
+            return
+
+        case 401:
+            throw NotionAPIError.unauthorized
+
+        default:
+            throw NotionAPIError.requestFailed(
+                statusCode: httpResponse.statusCode
+            )
+        }
+    }
 }
