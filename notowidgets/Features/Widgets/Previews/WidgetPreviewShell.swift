@@ -39,36 +39,33 @@ struct WidgetPreviewShell<Content: View>: View {
     private var previewWidth: CGFloat {
         switch size {
         case .small:
-            180
+            160
 
         case .medium, .large:
-            350
+            340
         }
     }
 
     private var previewHeight: CGFloat {
         switch size {
-        case .small:
-            180
-
-        case .medium:
-            180
+        case .small, .medium:
+            160
 
         case .large:
-            350
+            340
         }
     }
 
     private var contentPadding: CGFloat {
         switch size {
         case .small:
-            15
+            12
 
         case .medium:
-            17
+            14
 
         case .large:
-            20
+            16
         }
     }
 }

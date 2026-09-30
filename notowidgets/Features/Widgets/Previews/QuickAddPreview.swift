@@ -27,15 +27,14 @@ struct QuickAddPreview: View {
         WidgetPreviewShell(size: size) {
             VStack(alignment: .leading, spacing: 14) {
                 Text("Quick Add")
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .font(.system(size: size == .large ? 16 : 14, weight: .bold))
 
                 LazyVGrid(
                     columns: [
-                        GridItem(.flexible(), spacing: 10),
-                        GridItem(.flexible(), spacing: 10)
+                        GridItem(.flexible(), spacing: 6),
+                        GridItem(.flexible(), spacing: 6)
                     ],
-                    spacing: 10
+                    spacing: 6
                 ) {
                     ForEach(Array(actions.prefix(visibleCount).enumerated()), id: \.offset) { _, action in
                         actionButton(
@@ -55,31 +54,55 @@ struct QuickAddPreview: View {
         icon: String
     ) -> some View {
         if size == .small {
-            VStack(spacing: 5) {
+            VStack(spacing: 2) {
                 Image(systemName: icon)
-                    .font(.title3)
-                    .frame(width: 42, height: 42)
+                    .font(.system(size: 15))
+                    .frame(width: 34, height: 34)
                     .background(AppTheme.secondarySurface)
                     .clipShape(Circle())
 
                 Text(title)
-                    .font(.caption2)
+                    .font(.system(size: 9))
                     .lineLimit(1)
+                    .minimumScaleFactor(0.65)
+                    .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
 
+        } else if size == .medium {
+            HStack(spacing: 7) {
+                Image(systemName: icon)
+                    .font(.system(size: 13))
+
+                Text(title)
+                    .font(.system(size: 12))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Spacer()
+            }
+            .padding(.horizontal, 9)
+            .frame(height: 34)
+            .background(AppTheme.secondarySurface)
+            .clipShape(
+                RoundedRectangle(
+                    cornerRadius: 9,
+                    style: .continuous
+                )
+            )
         } else {
             HStack(spacing: 8) {
                 Image(systemName: icon)
+                    .font(.system(size: 14))
 
                 Text(title)
-                    .font(.subheadline)
+                    .font(.system(size: 13))
                     .lineLimit(1)
 
                 Spacer()
             }
             .padding(.horizontal, 10)
-            .frame(height: size == .large ? 42 : 36)
+            .frame(height: 38)
             .background(AppTheme.secondarySurface)
             .clipShape(
                 RoundedRectangle(
@@ -96,7 +119,7 @@ struct QuickAddPreview: View {
             4
 
         case .medium:
-            6
+            4
 
         case .large:
             10

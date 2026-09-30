@@ -26,8 +26,7 @@ struct PagesPreview: View {
             VStack(alignment: .leading, spacing: rowSpacing) {
                 HStack {
                     Text("Favorite Pages")
-                        .font(.headline)
-                        .fontWeight(.bold)
+                        .font(.system(size: size == .large ? 16 : 14, weight: .bold))
 
                     Spacer()
 
@@ -44,7 +43,7 @@ struct PagesPreview: View {
                             .foregroundStyle(.secondary)
 
                         Text(page)
-                            .font(.subheadline)
+                            .font(.system(size: size == .large ? 14 : 12))
                             .lineLimit(1)
 
                         Spacer()
@@ -71,13 +70,13 @@ struct PagesPreview: View {
     private var rowSpacing: CGFloat {
         switch size {
         case .small:
-            9
+            7
 
         case .medium:
-            11
+            8
 
         case .large:
-            13
+            11
         }
     }
 }

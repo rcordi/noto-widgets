@@ -26,8 +26,7 @@ struct ChecklistPreview: View {
             VStack(alignment: .leading, spacing: rowSpacing) {
                 HStack {
                     Text("Today's Tasks")
-                        .font(.headline)
-                        .fontWeight(.bold)
+                        .font(.system(size: size == .large ? 16 : 14, weight: .bold))
 
                     Spacer()
 
@@ -49,10 +48,11 @@ struct ChecklistPreview: View {
     ) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "doc.text")
+                .font(.system(size: size == .large ? 14 : 12))
                 .foregroundStyle(.secondary)
 
             Text(title)
-                .font(.subheadline)
+                .font(.system(size: size == .large ? 14 : 12))
                 .lineLimit(1)
 
             Spacer()
@@ -63,7 +63,7 @@ struct ChecklistPreview: View {
                     ? "checkmark.square"
                     : "square"
             )
-            .font(.title3)
+            .font(.system(size: size == .large ? 18 : 16))
             .foregroundStyle(.secondary)
         }
     }
@@ -84,13 +84,13 @@ struct ChecklistPreview: View {
     private var rowSpacing: CGFloat {
         switch size {
         case .small:
-            8
+            6
 
         case .medium:
-            10
+            7
 
         case .large:
-            12
+            10
         }
     }
 }

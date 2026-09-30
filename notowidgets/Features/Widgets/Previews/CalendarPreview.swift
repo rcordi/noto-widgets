@@ -26,20 +26,21 @@ struct CalendarPreview: View {
     }
 
     private var todayView: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("Wednesday")
-                        .font(.subheadline)
+                        .font(.system(size: 11))
                         .foregroundStyle(AppTheme.accent)
 
                     Text("30")
-                        .font(.system(size: 42, weight: .bold))
+                        .font(.system(size: 25, weight: .bold))
                 }
 
                 Spacer()
 
                 Image(systemName: "arrow.clockwise")
+                    .font(.system(size: 13))
                     .foregroundStyle(.secondary)
             }
 
@@ -47,12 +48,18 @@ struct CalendarPreview: View {
             calendarEvent("11:30 AM", "Review Plans")
             calendarEvent("12:30 PM", "Organize Notes")
 
-            Spacer()
-
             HStack {
-                Spacer()
 
-                addButton
+                Button {
+                    // Add event later
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 16, weight: .medium))
+                        .frame(width: 28, height: 28)
+                        .background(AppTheme.secondarySurface)
+                        .clipShape(Circle())
+                }
+                .buttonStyle(PressableButtonStyle())
             }
         }
         .foregroundStyle(.white)
@@ -62,8 +69,7 @@ struct CalendarPreview: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("September 2026")
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .font(.system(size: 14, weight: .bold))
 
                 Spacer()
 
@@ -77,7 +83,7 @@ struct CalendarPreview: View {
                     id: \.self
                 ) { day in
                     Text(day)
-                        .font(.caption)
+                        .font(.system(size: 10))
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity)
                 }
@@ -90,7 +96,7 @@ struct CalendarPreview: View {
                 ) { date in
                     VStack(spacing: 4) {
                         Text(date)
-                            .font(.subheadline)
+                            .font(.system(size: 12))
 
                         if date == "30" {
                             Circle()
@@ -113,31 +119,74 @@ struct CalendarPreview: View {
     }
 
     private var monthView: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 8) {
+
+            // LEFT: month calendar
             VStack(alignment: .leading, spacing: 10) {
-                Text("September 2026")
-                    .font(.headline)
-                    .fontWeight(.bold)
+                HStack(spacing: 6) {
+                    Text("September 2026")
+                        .font(.system(size: 15, weight: .bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+
+                    Button {
+                        // Previous month later
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 11, weight: .bold))
+                            .frame(width: 26, height: 26)
+                            .background(AppTheme.secondarySurface)
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(PressableButtonStyle())
+
+                    Button {
+                        // Next month later
+                    } label: {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .bold))
+                            .frame(width: 26, height: 26)
+                            .background(AppTheme.secondarySurface)
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(PressableButtonStyle())
+
+                    Spacer()
+                }
 
                 weekdayHeader
 
                 monthGrid
+
+                Spacer()
             }
             .frame(maxWidth: .infinity)
 
             Divider()
 
-            VStack(alignment: .leading, spacing: 9) {
+            // RIGHT: today's events
+            VStack(alignment: .leading, spacing: 7) {
                 HStack {
                     Text("Today")
-                        .font(.headline)
-                        .fontWeight(.bold)
+                        .font(.system(size: 13, weight: .semibold))
 
                     Spacer()
 
-                    Image(systemName: "arrow.clockwise")
-                        .foregroundStyle(.secondary)
+                    Button {
+                        // Refresh later
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 11, weight: .semibold))
+                            .frame(width: 28, height: 28)
+                            .background(AppTheme.secondarySurface)
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(PressableButtonStyle())
                 }
+
+                Text("Wed, 09-30")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
 
                 calendarEvent("10:30", "Team Meeting")
                 calendarEvent("11:30", "Review Plans")
@@ -147,10 +196,20 @@ struct CalendarPreview: View {
 
                 HStack {
                     Spacer()
-                    addButton
+
+                    Button {
+                        // Add later
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 18))
+                            .frame(width: 34, height: 34)
+                            .background(AppTheme.secondarySurface)
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(PressableButtonStyle())
                 }
             }
-            .frame(maxWidth: .infinity)
+            .frame(width: 95)
         }
         .foregroundStyle(.white)
     }
@@ -158,11 +217,11 @@ struct CalendarPreview: View {
     private var weekdayHeader: some View {
         HStack(spacing: 0) {
             ForEach(
-                ["M", "T", "W", "T ", "F", "S", "S "],
-                id: \.self
-            ) { day in
+                Array(["M", "T", "W", "T", "F", "S", "S"].enumerated()),
+                id: \.offset
+            ) { _, day in
                 Text(day)
-                    .font(.caption2)
+                    .font(.system(size: 9))
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity)
             }
@@ -175,24 +234,36 @@ struct CalendarPreview: View {
             "7", "8", "9", "10", "11", "12", "13",
             "14", "15", "16", "17", "18", "19", "20",
             "21", "22", "23", "24", "25", "26", "27",
-            "28", "29", "30", "1 ", "2 ", "3 ", "4 "
+            "28", "29", "30", "1", "2", "3", "4"
         ]
 
         return LazyVGrid(
             columns: Array(
-                repeating: GridItem(.flexible()),
+                repeating: GridItem(.flexible(), spacing: 2),
                 count: 7
             ),
-            spacing: 10
+            spacing: 8
         ) {
             ForEach(days.indices, id: \.self) { index in
-                Text(days[index])
-                    .font(.caption2)
-                    .foregroundStyle(
-                        index == 30
-                        ? AppTheme.accent
-                        : .white
-                    )
+                ZStack {
+                    if index == 30 {
+                        Circle()
+                            .fill(AppTheme.accent)
+                            .frame(width: 24, height: 24)
+                    }
+
+                    Text(days[index])
+                        .font(
+                            .system(
+                                size: 10,
+                                weight: index == 30 ? .semibold : .regular
+                            )
+                        )
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 24)
             }
         }
     }
@@ -201,27 +272,28 @@ struct CalendarPreview: View {
         _ time: String,
         _ title: String
     ) -> some View {
-        HStack(spacing: 7) {
+        HStack(spacing: 6) {
             RoundedRectangle(cornerRadius: 2)
                 .fill(AppTheme.accent)
-                .frame(width: 4, height: 27)
+                .frame(width: 3, height: 22)
 
             VStack(alignment: .leading, spacing: 0) {
                 Text(time)
-                    .font(.caption2)
+                    .font(.system(size: 9))
                     .foregroundStyle(.secondary)
 
                 Text(title)
-                    .font(.caption)
+                    .font(.system(size: 10))
                     .lineLimit(1)
             }
         }
+        .frame(height: 24)
     }
 
     private var addButton: some View {
         Image(systemName: "plus")
             .font(.title3)
-            .frame(width: 38, height: 38)
+            .frame(width: 32, height: 32)
             .background(AppTheme.secondarySurface)
             .clipShape(Circle())
     }

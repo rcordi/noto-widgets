@@ -44,12 +44,13 @@ struct GraphTrackerPreview: View {
             .frame(maxWidth: .infinity)
 
         case .medium:
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 ForEach(Array(trackers.prefix(3).enumerated()), id: \.offset) { _, tracker in
                     progressRing(tracker)
                 }
             }
-            .padding(.top, 32)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 12)
 
         case .large:
             LazyVGrid(
@@ -58,13 +59,13 @@ struct GraphTrackerPreview: View {
                     GridItem(.flexible()),
                     GridItem(.flexible())
                 ],
-                spacing: 20
+                spacing: 14
             ) {
                 ForEach(Array(trackers.prefix(6).enumerated()), id: \.offset) { _, tracker in
                     progressRing(tracker)
                 }
             }
-            .padding(.top, 26)
+            .padding(.top, 12)
         }
     }
 
@@ -104,8 +105,7 @@ struct GraphTrackerPreview: View {
 
                 VStack(spacing: 0) {
                     Text("\(tracker.2)")
-                        .font(.headline)
-                        .fontWeight(.bold)
+                        .font(.system(size: 15, weight: .bold))
 
                     Text("/ \(tracker.3)")
                         .font(.caption)
@@ -121,7 +121,8 @@ struct GraphTrackerPreview: View {
                 .font(.caption)
 
             Text(tracker.0)
-                .font(.caption2)
+                .font(.system(size: 10))
+                .lineLimit(1)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -130,13 +131,13 @@ struct GraphTrackerPreview: View {
     private var ringDiameter: CGFloat {
         switch size {
         case .small:
-            108
+            100
 
         case .medium:
-            76
+            68
 
         case .large:
-            72
+            70
         }
     }
 

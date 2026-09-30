@@ -38,8 +38,7 @@ struct WidgetLibraryView: View {
     private var header: some View {
         ZStack {
             Text("Widgets")
-                .font(.title3)
-                .fontWeight(.semibold)
+                .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(.white)
             
             HStack {
@@ -47,29 +46,29 @@ struct WidgetLibraryView: View {
                     showingWidgetPicker = true
                 } label: {
                     Image(systemName: "plus")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
-                        .frame(width: 44, height: 44)
+                        .frame(width: 40, height: 40)
                         .background(AppTheme.surface)
                         .clipShape(Circle())
-                }
+                } .buttonStyle(PressableButtonStyle())
                 Spacer()
                 
                 Button {
                     showingSettings = true
                 } label: {
                     Image(systemName: "gearshape")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
-                        .frame(width: 44, height: 44)
+                        .frame(width: 40, height: 40)
                         .background(AppTheme.surface)
                         .clipShape(Circle())
-                }
+                } .buttonStyle(PressableButtonStyle())
             }
         }
         .padding(.horizontal, AppTheme.horizontalPadding)
-        .padding(.top, 8)
-        .frame(height: 60)
+        .padding(.top, 0)
+        .frame(height: 50)
     }
     
     private var emptyState: some View {
@@ -106,6 +105,7 @@ struct WidgetLibraryView: View {
                 )
             )
             .padding(.horizontal, 28)
+            .buttonStyle(PressableButtonStyle())
                 
         }
     }

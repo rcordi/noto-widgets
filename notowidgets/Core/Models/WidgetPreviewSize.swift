@@ -21,9 +21,9 @@ enum WidgetPreviewSize: String, CaseIterable, Identifiable {
     var systemImage: String {
         switch self {
         case .small:
-            return "square.grid.2x2"
+            return "square"
         case .medium:
-            return "rectangle.split.1.2"
+            return "rectangle"
         case .large:
             return "square.grid.3x3"
         }

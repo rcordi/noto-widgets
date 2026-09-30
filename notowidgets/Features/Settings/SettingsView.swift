@@ -31,6 +31,13 @@ struct SettingsView: View {
                     Button("Done") {
                         dismiss()
                     }
+                    .font(.body)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 18)
+                    .frame(height: 46)
+                    .background(AppTheme.surface)
+                    .clipShape(Capsule())
+                    .buttonStyle(PressableButtonStyle())
                 }
             }
         }

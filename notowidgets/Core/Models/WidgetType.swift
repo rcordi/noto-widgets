@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum WidgetType: String, Codable, CaseIterable, Identifiable {
+enum WidgetType: String, Codable, CaseIterable, Identifiable, Hashable {
     case quickAdd
     case checklist
     case graphTracker

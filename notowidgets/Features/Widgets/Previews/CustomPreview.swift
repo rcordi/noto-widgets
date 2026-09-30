@@ -12,13 +12,12 @@ struct CustomPreview: View {
 
     var body: some View {
         WidgetPreviewShell(size: size) {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: size == .large ? 11 : 8) {
                 Text("Custom Widget")
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .font(.system(size: size == .large ? 14 : 12))
 
                 Text("Build a widget using your own Notion data, layout and actions.")
-                    .font(.subheadline)
+                    .font(.system(size: size == .large ? 13 : 11))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.leading)
 
